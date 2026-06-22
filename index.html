@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognir Research</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #1a1a1a;
+            min-height: 100vh;
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 48px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .nav-left { display: flex; align-items: center; gap: 10px; }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+        .logo-icon { height: 28px; width: auto; object-fit: contain; display: block; }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .btn {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            font-family: inherit;
+        }
+        .btn-signin { background-color: #1a1a1a; color: #fff; }
+        .btn-signin:hover { background-color: #333; }
+        .btn-signup { background-color: transparent; color: #1a1a1a; border: 1px solid #d1d1d1; }
+        .btn-signup:hover { border-color: #999; background-color: #fafafa; }
+        .btn-explore { background-color: transparent; color: #1a1a1a; border: 1px solid #d1d1d1; margin-left: 8px; }
+        .btn-explore:hover { border-color: #999; background-color: #fafafa; }
+        .banner {
+            background-color: #ebebeb;
+            text-align: center;
+            padding: 14px 0;
+            font-size: 14.5px;
+            font-weight: 500;
+            color: #333;
+            letter-spacing: 0.2px;
+        }
+        .banner a { color: #333; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 140px;
+            padding-bottom: 60px;
+            transition: all 0.5s ease;
+        }
+        .hero-title {
+            font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+            font-size: 52px;
+            font-weight: 400;
+            color: #2a2a2a;
+            margin-bottom: 48px;
+            letter-spacing: -0.5px;
+            transition: all 0.5s ease;
+        }
+        .input-container {
+            width: 100%;
+            max-width: 720px;
+            background-color: #fff;
+            border-radius: 24px;
+            border: 1px solid #e0e0e0;
+            padding: 20px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            position: relative;
+            transition: all 0.4s ease;
+        }
+        .input-hint {
+            font-size: 13px;
+            color: #c0392b;
+            margin-top: 8px;
+            min-height: 20px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            text-align: left;
+            font-weight: 500;
+        }
+        .input-hint.visible { opacity: 1; }
+        .input-field {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #1a1a1a;
+            font-family: inherit;
+            resize: none;
+            min-height: 48px;
+            background: transparent;
+        }
+        .input-field::placeholder { color: #b0b0b0; font-size: 16px; }
+        .input-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+        .btn-send {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background-color: #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #888;
+        }
+        .btn-send.active { background-color: #1a1a1a; color: #fff; }
+        .btn-send.active:hover { background-color: #333; }
+        .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 48px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            transform: translateY(12px) scale(0.98);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .modal-overlay.open .modal-card { transform: translateY(0) scale(1); }
+        .modal-header { text-align: center; margin-bottom: 32px; }
+        .modal-header h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 28px;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .modal-header p { font-size: 14.5px; color: #666; font-weight: 400; }
+        .modal-form { display: flex; flex-direction: column; gap: 14px; }
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color: #1a1a1a;
+        }
+        .modal-input:focus { border-color: #1a1a1a; box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.06); }
+        .modal-input::placeholder { color: #aaa; }
+        .modal-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 6px;
+            font-family: inherit;
+        }
+        .modal-btn:hover { background-color: #333; }
+        .modal-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: #999;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .modal-divider::before, .modal-divider::after { content: ''; flex: 1; height: 1px; background: #e8e8e8; }
+        .modal-footer { text-align: center; margin-top: 20px; font-size: 13.5px; color: #666; }
+        .modal-footer a { color: #1a1a1a; font-weight: 500; text-decoration: none; }
+        .modal-footer a:hover { text-decoration: underline; }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: #f5f5f5; color: #1a1a1a; }
+        .modal-wrapper { position: relative; }
+
+        /* Chat Mode */
+        .chat-mode .hero {
+            padding-top: 24px;
+            padding-bottom: 100px;
+            justify-content: flex-start;
+            min-height: calc(100vh - 120px);
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .chat-mode .hero-title { opacity: 0; height: 0; margin: 0; overflow: hidden; }
+        .messages-container {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 0 12px;
+        }
+        .chat-mode .messages-container { display: flex; }
+        .message {
+            max-width: 85%;
+            padding: 16px 20px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.6;
+            animation: msgIn 0.35s ease both;
+        }
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: none; }
+        }
+        .message.user {
+            align-self: flex-end;
+            background-color: #1a1a1a;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .message.assistant {
+            align-self: flex-start;
+            background: none;
+            border: none;
+            box-shadow: none;
+            padding: 0 4px;
+            max-width: 92%;
+            color: #1a1a1a;
+            font-size: 15.5px;
+            line-height: 1.75;
+        }
+        .message.assistant.typing {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            color: #555;
+        }
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: #1a1a1a;
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+        .chat-mode .input-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 48px);
+            max-width: 720px;
+            z-index: 100;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        .input-container.disabled { opacity: 0.5; pointer-events: none; }
+        .input-container.pipeline-hidden { display: none; }
+
+        /* Result Cards */
+        .result-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .result-intent {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 18px;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+        .result-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .meta-tag {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        .meta-tag.domain { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .result-grid-item { background: #fafafa; border: 1px solid #e8e8e8; border-radius: 12px; padding: 16px; }
+        .result-grid-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #999;
+            margin-bottom: 6px;
+        }
+        .result-grid-value {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-style: italic;
+            font-size: 14px;
+            color: #444;
+            line-height: 1.5;
+        }
+        .question-list { display: flex; flex-direction: column; gap: 12px; }
+        .question-item {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s, border-color 0.2s;
+        }
+        .question-item:hover { transform: translateY(-1px); border-color: #d0d0d0; }
+        .question-item.rank-1 { border-left: 3px solid #1a1a1a; }
+        .question-item.rank-2 { border-left: 3px solid #666; }
+        .question-item.rank-3 { border-left: 3px solid #aaa; }
+        .question-rank {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 28px;
+            color: #ddd;
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-weight: 400;
+        }
+        .question-item.rank-1 .question-rank { color: #1a1a1a; }
+        .question-item.rank-2 .question-rank { color: #666; }
+        .question-item.rank-3 .question-rank { color: #aaa; }
+        .question-text {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            padding-right: 40px;
+        }
+        .score-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+        .score-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
+        .score-bar { width: 40px; height: 3px; background: #e0e0e0; border-radius: 99px; overflow: hidden; }
+        .score-bar-fill { height: 100%; background: #1a1a1a; border-radius: 99px; transition: width 1s ease; }
+        .score-bar-fill.med { background: #666; }
+        .score-bar-fill.low { background: #aaa; }
+        .conf-bar-wrap { margin-top: 8px; }
+        .conf-bar-track { width: 100%; height: 4px; background: #e0e0e0; border-radius: 99px; overflow: hidden; }
+        .conf-bar-fill { height: 100%; background: linear-gradient(90deg, #1a1a1a, #666); border-radius: 99px; transition: width 1.2s ease; }
+        .conf-label { display: flex; justify-content: space-between; font-size: 11px; color: #999; margin-bottom: 4px; }
+        .detail-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #e8e8e8; }
+        .detail-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 4px; }
+        .detail-text { font-size: 13px; color: #555; line-height: 1.6; font-family: 'Playfair Display', Georgia, serif; font-style: italic; }
+        .evidence-list-chat { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+        .evidence-item-chat {
+            font-size: 12px;
+            color: #666;
+            padding: 8px 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+        .evidence-item-chat strong { color: #1a1a1a; font-weight: 500; }
+        .evidence-item-chat a { text-decoration: none; color: #1a1a1a; }
+        .evidence-item-chat a:hover { text-decoration: underline; }
+        .reset-chat-btn {
+            margin-top: 16px;
+            background: transparent;
+            border: 1px solid #d1d1d1;
+            color: #1a1a1a;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .reset-chat-btn:hover { background: #fafafa; border-color: #999; }
+
+        /* Pipeline Progress */
+        .pipeline-progress {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 12px 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 14px;
+            width: auto;
+            max-width: min(520px, calc(100vw - 40px));
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+        }
+        .pipeline-progress.visible {
+            display: flex;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .progress-track { flex: 1; height: 4px; background: #e8e8e8; border-radius: 99px; overflow: hidden; min-width: 140px; }
+        .progress-fill { height: 100%; background: #1a1a1a; border-radius: 99px; transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1); width: 0%; }
+        .progress-text { font-size: 13.5px; font-weight: 500; color: #1a1a1a; white-space: nowrap; letter-spacing: -0.2px; }
+        .progress-stop {
+            font-size: 12.5px;
+            color: #c0392b;
+            background: transparent;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-family: inherit;
+            flex-shrink: 0;
+        }
+        .progress-stop:hover { background: #fef2f2; border-color: #c0392b; color: #a93226; }
+
+        /* Connection status */
+        .connection-status {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .connection-status.visible { opacity: 1; }
+        .connection-status.error { background: #c0392b; }
+
+        /* Working... collapsible — Claude-style */
+        .working-block {
+            align-self: flex-start;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            animation: msgIn 0.3s ease both;
+            max-width: 92%;
+            padding: 0 4px;
+        }
+        .working-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+            padding: 2px 0;
+        }
+        .working-label {
+            font-size: 13.5px;
+            font-weight: 500;
+            color: #888;
+            letter-spacing: -0.1px;
+        }
+        .working-spinner {
+            width: 13px;
+            height: 13px;
+            border: 1.5px solid #ddd;
+            border-top-color: #888;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .working-chevron {
+            width: 14px;
+            height: 14px;
+            color: #aaa;
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+        }
+        .working-block.open .working-chevron { transform: rotate(180deg); }
+        .working-log {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+            opacity: 0;
+        }
+        .working-block.open .working-log {
+            max-height: 600px;
+            opacity: 1;
+        }
+        .working-log-inner {
+            margin-top: 8px;
+            border-left: 2px solid #e8e8e8;
+            padding: 4px 0 4px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .working-step {
+            font-size: 12.5px;
+            color: #999;
+            line-height: 1.5;
+            transition: color 0.2s;
+        }
+        .working-step.active {
+            color: #555;
+            font-weight: 500;
+        }
+        .working-step.done {
+            color: #bbb;
+        }
+
+        @media (max-width: 640px) {
+            .result-grid { grid-template-columns: 1fr; }
+            .navbar { padding: 16px 24px; }
+            .chat-mode .hero { padding-bottom: 120px; }
+            .chat-mode .input-container { width: calc(100% - 32px); bottom: 16px; }
+            .message { max-width: 92%; }
+            .pipeline-progress { padding: 10px 14px; gap: 10px; top: 12px; border-radius: 12px; }
+            .progress-text { font-size: 12px; }
+            .progress-track { min-width: 80px; }
+            .progress-stop { padding: 5px 10px; font-size: 11px; }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo">
+                <img class="logo-icon" src="favicon.png" alt="Cognir Research logo">
+                cognir research
+            </div>
+            <a href="https://cognir.netlify.app/what-is-this/" class="btn btn-explore" target="_blank">Explore Cognir</a>
+        </div>
+        <div class="nav-right">
+            <button class="btn btn-signin" onclick="openModal('signin')">Sign in</button>
+            <button class="btn btn-signup" onclick="openModal('signup')">Sign up</button>
+        </div>
+    </nav>
+
+    <!-- Announcement Banner -->
+    <div class="banner">
+        <a href="#">Cognir Research is a meticulous research assistant, part of Cognir Ink.</a>
+    </div>
+
+    <!-- Hero / Chat Section -->
+    <main class="hero" id="hero">
+        <h1 class="hero-title" id="hero-title">Ideas?</h1>
+
+        <div class="messages-container" id="messages-container"></div>
+
+        <div class="input-container" id="input-container">
+            <textarea class="input-field" id="typing-area" rows="2" placeholder=""></textarea>
+            <div class="input-actions">
+                <button class="btn-send" id="send-btn" aria-label="Send" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                </button>
+            </div>
+            <div class="input-hint" id="input-hint"></div>
+        </div>
+    </main>
+
+    <!-- Pipeline Progress -->
+    <div class="pipeline-progress" id="pipeline-progress">
+        <div class="progress-text" id="progress-text">Step 1 of 9</div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+        <button class="progress-stop" id="progress-stop">Stop</button>
+    </div>
+
+    <!-- Connection Status -->
+    <div class="connection-status" id="connection-status">Connecting...</div>
+
+    <!-- Sign In Modal -->
+    <div class="modal-overlay" id="signin-modal">
+        <div class="modal-card">
+            <div class="modal-wrapper">
+                <button class="modal-close" onclick="closeModal()" aria-label="Close">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="modal-header">
+                    <h2>Welcome back</h2>
+                    <p>Sign in to continue exploring with Cognir</p>
+                </div>
+                <form class="modal-form" onsubmit="event.preventDefault();">
+                    <input type="email" class="modal-input" placeholder="Email address" required>
+                    <input type="password" class="modal-input" placeholder="Password" required>
+                    <button type="submit" class="modal-btn">Sign in</button>
+                </form>
+                <div class="modal-footer">
+                    Don't have an account? <a href="#" onclick="updateModalMode('signup'); return false;">Sign up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CONFIGURATION
+        // ═══════════════════════════════════════════════════════════════════════════
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000' 
+            : 'https://cognir-research-api.onrender.com';
+        const MIN_INPUT_LENGTH = 50;
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // AUTH STATE
+        // ═══════════════════════════════════════════════════════════════════════════
+        let authToken = localStorage.getItem('cognir_token');
+        let currentUser = null;
+
+        function setAuthUI() {
+            const navRight = document.querySelector('.nav-right');
+            if (authToken) {
+                navRight.innerHTML = `<button class="btn btn-signup" onclick="logout()">Log out</button>`;
+            } else {
+                navRight.innerHTML = `
+                    <button class="btn btn-signin" onclick="openModal('signin')">Sign in</button>
+                    <button class="btn btn-signup" onclick="openModal('signup')">Sign up</button>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('cognir_token');
+            authToken = null;
+            currentUser = null;
+            setAuthUI();
+        }
+
+        function updateModalMode(mode) {
+            const headerH2 = document.querySelector('.modal-header h2');
+            const headerP = document.querySelector('.modal-header p');
+            const submitBtn = document.querySelector('.modal-form button');
+            const footer = document.querySelector('.modal-footer');
+            
+            if (mode === 'signup') {
+                headerH2.textContent = 'Create your account';
+                headerP.textContent = 'Sign up to start exploring with Cognir';
+                submitBtn.textContent = 'Sign up';
+                footer.innerHTML = 'Already have an account? <a href="#" onclick="updateModalMode(\'signin\'); return false;">Sign in</a>';
+            } else {
+                headerH2.textContent = 'Welcome back';
+                headerP.textContent = 'Sign in to continue exploring with Cognir';
+                submitBtn.textContent = 'Sign in';
+                footer.innerHTML = 'Don\'t have an account? <a href="#" onclick="updateModalMode(\'signup\'); return false;">Sign up</a>';
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // TYPING PLACEHOLDER EFFECT
+        // ═══════════════════════════════════════════════════════════════════════════
+        const sentences = [
+            "I keep thinking about whether intelligence is just pattern recognition or something deeper and I can't stop looping on it",
+            "Why do some people learn insanely fast even when they don't study that much, what's actually happening there",
+            "I've been reading about AI alignment but I don't even fully understand what the real problem is supposed to be",
+            "How do people actually become original thinkers and not just remix ideas from other people",
+            "I don't get if consciousness is something real or just a side effect of brain activity",
+            "What makes certain startups explode while others with better ideas just die quietly",
+            "I keep seeing stuff about dopamine and motivation but it feels oversimplified, what's the real science behind it",
+            "Is math invented or discovered and why do smart people argue about it so much",
+            "Why do some arguments online feel so convincing even when they're completely wrong",
+            "I want to understand how human beliefs actually form and change over time, not just the psychology textbook version"
+        ];
+
+        const textarea = document.getElementById('typing-area');
+        const sendBtn = document.getElementById('send-btn');
+        const modal = document.getElementById('signin-modal');
+        let sentenceIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let isPaused = false;
+        let typingInterval;
+        const typeSpeed = 45;
+        const deleteSpeed = 18;
+        const pauseBetween = 2200;
+        const pauseAfterDelete = 600;
+
+        function typeEffect() {
+            if (isPaused) return;
+            const currentSentence = sentences[sentenceIndex];
+            if (!isDeleting) {
+                textarea.setAttribute('placeholder', currentSentence.substring(0, charIndex + 1));
+                charIndex++;
+                if (charIndex === currentSentence.length) {
+                    isDeleting = true;
+                    typingInterval = setTimeout(typeEffect, pauseBetween);
+                    return;
+                }
+            } else {
+                textarea.setAttribute('placeholder', currentSentence.substring(0, charIndex - 1));
+                charIndex--;
+                if (charIndex === 0) {
+                    isDeleting = false;
+                    sentenceIndex = (sentenceIndex + 1) % sentences.length;
+                    typingInterval = setTimeout(typeEffect, pauseAfterDelete);
+                    return;
+                }
+            }
+            const speed = isDeleting ? deleteSpeed : typeSpeed;
+            typingInterval = setTimeout(typeEffect, speed + (Math.random() * 20 - 10));
+        }
+
+        textarea.addEventListener('focus', () => {
+            isPaused = true;
+            clearTimeout(typingInterval);
+            textarea.setAttribute('placeholder', '');
+        });
+
+        textarea.addEventListener('blur', () => {
+            if (textarea.value.trim() === '') {
+                isPaused = false;
+                charIndex = 0;
+                isDeleting = false;
+                sentenceIndex = (sentenceIndex + 1) % sentences.length;
+                typeEffect();
+            }
+        });
+
+        textarea.addEventListener('input', () => {
+            const val = textarea.value.trim();
+            if (val.length > 0) {
+                sendBtn.classList.add('active');
+                sendBtn.disabled = false;
+            } else {
+                sendBtn.classList.remove('active');
+                sendBtn.disabled = true;
+            }
+            document.getElementById('input-hint').classList.remove('visible');
+        });
+
+        // Modal handlers
+        function openModal(mode) {
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            updateModalMode(mode);
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+        });
+
+        // Wire up the modal form to real auth API
+        document.querySelector('.modal-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            const password = e.target.querySelector('input[type="password"]').value;
+            const isSignUp = document.querySelector('.modal-form button').textContent === 'Sign up';
+            
+            const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login';
+            
+            try {
+                const res = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Authentication failed');
+                
+                authToken = data.token;
+                localStorage.setItem('cognir_token', authToken);
+                currentUser = data.user;
+                closeModal();
+                setAuthUI();
+            } catch (err) {
+                alert(err.message);
+            }
+        };
+
+        typeEffect();
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CHAT UI SYSTEM
+        // ═══════════════════════════════════════════════════════════════════════════
+        let chatMode = false;
+        let engineRunning = false;
+        let messageQueue = [];
+        let isProcessingMessage = false;
+        let currentEventSource = null;
+        let currentSessionId = null;
+
+        function enterChatMode() {
+            chatMode = true;
+            document.body.classList.add('chat-mode');
+            document.getElementById('hero-title').style.display = 'none';
+            document.getElementById('messages-container').style.display = 'flex';
+        }
+
+        function isNearBottom() {
+            const threshold = 200;
+            return (window.innerHeight + window.scrollY) >= (document.body.scrollHeight - threshold);
+        }
+
+        function scrollToMessage(element) {
+            if (isNearBottom()) {
+                requestAnimationFrame(() => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                });
+            }
+        }
+
+        function addUserMessage(text) {
+            const container = document.getElementById('messages-container');
+            const msg = document.createElement('div');
+            msg.className = 'message user';
+            msg.textContent = text;
+            container.appendChild(msg);
+            scrollToMessage(msg);
+        }
+
+        async function addAssistantMessage(text, options = {}) {
+            return new Promise((resolve) => {
+                messageQueue.push({ text, options, resolve });
+                if (!isProcessingMessage) processMessageQueue();
+            });
+        }
+
+        async function processMessageQueue() {
+            if (messageQueue.length === 0) {
+                isProcessingMessage = false;
+                return;
+            }
+            isProcessingMessage = true;
+            const { text, options, resolve } = messageQueue.shift();
+
+            const container = document.getElementById('messages-container');
+            const msg = document.createElement('div');
+            msg.className = 'message assistant';
+
+            if (options.typing) {
+                msg.classList.add('typing');
+                container.appendChild(msg);
+                scrollToMessage(msg);
+                await typeOutText(msg, text);
+                msg.classList.remove('typing');
+            } else {
+                msg.innerHTML = text;
+                container.appendChild(msg);
+                scrollToMessage(msg);
+            }
+
+            resolve(msg);
+            setTimeout(() => processMessageQueue(), 400);
+        }
+
+        function typeOutText(element, text, speed = 28) {
+            return new Promise((resolve) => {
+                element.innerHTML = '';
+                let i = 0;
+                const cursor = document.createElement('span');
+                cursor.className = 'typing-cursor';
+
+                function type() {
+                    if (i < text.length) {
+                        element.textContent = text.substring(0, i + 1);
+                        element.appendChild(cursor);
+                        i++;
+                        scrollToMessage(element);
+                        const jitter = Math.random() * 12 - 6;
+                        setTimeout(type, speed + jitter);
+                    } else {
+                        element.textContent = text;
+                        resolve();
+                    }
+                }
+                type();
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // WORKING... COLLAPSIBLE BLOCK
+        // ═══════════════════════════════════════════════════════════════════════════
+        let workingBlock = null;
+        let workingLogInner = null;
+
+        const stageHumanLabels = {
+            s1: "I'm reading your idea carefully...",
+            s2: "Now I'll compress this into a clear research intent...",
+            s3: "Generating candidate research questions...",
+            s4: "Building targeted search queries for each question...",
+            s5: "Collecting evidence from the web...",
+            s6: "Scoring each question for viability...",
+            s7: "Running a final validation pass...",
+            s8: "Refining and improving the top questions...",
+            s9: "Ranking and selecting the best questions for you...",
+        };
+
+        function createWorkingBlock() {
+            const container = document.getElementById('messages-container');
+
+            const block = document.createElement('div');
+            block.className = 'working-block';
+
+            const header = document.createElement('div');
+            header.className = 'working-header';
+            header.innerHTML = `
+                <div class="working-spinner"></div>
+                <span class="working-label">Working...</span>
+                <svg class="working-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>`;
+
+            const log = document.createElement('div');
+            log.className = 'working-log';
+
+            const logInner = document.createElement('div');
+            logInner.className = 'working-log-inner';
+            log.appendChild(logInner);
+
+            block.appendChild(header);
+            block.appendChild(log);
+            container.appendChild(block);
+
+            header.addEventListener('click', () => {
+                block.classList.toggle('open');
+            });
+
+            workingBlock = block;
+            workingLogInner = logInner;
+            scrollToMessage(block);
+        }
+
+        function updateWorkingBlock(stageId, state) {
+            if (!workingBlock || !workingLogInner) return;
+
+            const label = stageHumanLabels[stageId];
+            if (!label) return;
+
+            let existing = workingLogInner.querySelector(`[data-stage="${stageId}"]`);
+            if (!existing) {
+                const step = document.createElement('div');
+                step.className = 'working-step';
+                step.dataset.stage = stageId;
+                step.textContent = label;
+                workingLogInner.appendChild(step);
+                existing = step;
+            }
+
+            workingLogInner.querySelectorAll('.working-step').forEach(s => {
+                if (s !== existing) {
+                    s.classList.remove('active');
+                    s.classList.add('done');
+                }
+            });
+
+            if (state === 'active') {
+                existing.classList.add('active');
+                existing.classList.remove('done');
+            } else if (state === 'done') {
+                existing.classList.remove('active');
+                existing.classList.add('done');
+            }
+        }
+
+        function finalizeWorkingBlock() {
+            if (!workingBlock) return;
+            const spinner = workingBlock.querySelector('.working-spinner');
+            const label = workingBlock.querySelector('.working-label');
+            if (spinner) spinner.style.display = 'none';
+            if (label) {
+                label.textContent = 'Done';
+                label.style.color = '#bbb';
+            }
+            if (workingLogInner) {
+                workingLogInner.querySelectorAll('.working-step').forEach(s => {
+                    s.classList.remove('active');
+                    s.classList.add('done');
+                });
+            }
+            workingBlock = null;
+            workingLogInner = null;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // PROGRESS UI
+        // ═══════════════════════════════════════════════════════════════════════════
+        function updateProgressUI(stageId, state) {
+            const el = document.getElementById('pipeline-progress');
+            const fill = document.getElementById('progress-fill');
+            const text = document.getElementById('progress-text');
+            if (!el || !fill || !text) return;
+
+            const stages = [
+                { id: 's1', label: 'Raw Text Understanding' },
+                { id: 's2', label: 'Intent Compression' },
+                { id: 's3', label: 'Candidate Question Generation' },
+                { id: 's4', label: 'Search Query Generation' },
+                { id: 's5', label: 'Evidence Collection' },
+                { id: 's6', label: 'Viability Scoring' },
+                { id: 's7', label: 'LLM Validation Pass' },
+                { id: 's8', label: 'Question Improvement' },
+                { id: 's9', label: 'Ranking & Selection' },
+            ];
+
+            if (!engineRunning) {
+                el.classList.remove('visible');
+                return;
+            }
+
+            el.classList.add('visible');
+
+            const stageIndex = stages.findIndex(s => s.id === stageId);
+            const doneCount = stages.filter((s, i) => i < stageIndex || (s.id === stageId && state === 'done')).length;
+            let currentIndex = state === 'active' ? stageIndex : doneCount - 1;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= stages.length) currentIndex = stages.length - 1;
+
+            const pct = ((currentIndex + 1) / stages.length) * 100;
+            fill.style.width = pct + '%';
+
+            const stage = stages[currentIndex];
+            text.textContent = `Step ${currentIndex + 1} of ${stages.length}: ${stage.label}`;
+        }
+
+        function showConnectionStatus(message, isError = false) {
+            const status = document.getElementById('connection-status');
+            status.textContent = message;
+            status.classList.toggle('error', isError);
+            status.classList.add('visible');
+            setTimeout(() => status.classList.remove('visible'), 3000);
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // RESULT RENDERER
+        // ═══════════════════════════════════════════════════════════════════════════
+        function renderResultsInChat({ intent, extraction, questions }) {
+            const html = `
+                <div class="result-card">
+                    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #999; margin-bottom: 10px;">What You're Actually Trying to Research</div>
+                    <div class="result-intent">${escHtml(intent.research_intent)}</div>
+                    <div class="result-meta">
+                        ${extraction.research_domains?.map(d => `<span class="meta-tag domain">${escHtml(d)}</span>`).join('') || ''}
+                        ${extraction.key_concepts?.map(c => `<span class="meta-tag">${escHtml(c)}</span>`).join('') || ''}
+                    </div>
+                </div>
+                <div class="result-grid">
+                    <div class="result-grid-item">
+                        <div class="result-grid-label">Knowledge Gap</div>
+                        <div class="result-grid-value">${escHtml(intent.knowledge_gap)}</div>
+                    </div>
+                    <div class="result-grid-item">
+                        <div class="result-grid-label">Research Objective</div>
+                        <div class="result-grid-value">${escHtml(intent.research_objective)}</div>
+                    </div>
+                </div>
+                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: #999; margin-bottom: 12px;">Top ${questions.length} Research Questions</div>
+                <div class="question-list">
+                    ${questions.map((q, i) => renderQuestionCardLight(q, i)).join('')}
+                </div>
+                <button class="reset-chat-btn" onclick="resetChat()">← Start a New Research Session</button>
+            `;
+            addAssistantMessage(html, { typing: false });
+
+            requestAnimationFrame(() => {
+                document.querySelectorAll('.conf-bar-fill, .score-bar-fill').forEach(el => {
+                    const target = el.dataset.target;
+                    if (target) el.style.width = target + '%';
+                });
+            });
+        }
+
+        function renderQuestionCardLight(q, rank) {
+            const question = q.improvement?.improved_question || q.question;
+            const original = q.question;
+            const scores = q.scores;
+            const val = q.validation;
+            const conf = Math.round((val?.confidence || 0) * 100);
+            const ev = q.evidence;
+
+            const rankClass = `rank-${rank + 1}`;
+            const rankNum = rank === 0 ? '01' : rank === 1 ? '02' : '03';
+
+            const evidenceItems = [
+                ...((ev.serperResults || []).slice(0, 2).map(r => ({ label: r.title, sub: r.snippet?.slice(0, 100), url: r.url }))),
+                ...((ev.crawledPages || []).filter(p => p?.title).slice(0, 2).map(p => ({
+                    label: p.title,
+                    sub: (p.abstract || p.bodyText || '').slice(0, 100) + '…',
+                    url: p.url,
+                }))),
+            ].filter(e => e.label).slice(0, 4);
+
+            return `
+                <div class="question-item ${rankClass}">
+                    <div class="question-rank">${rankNum}</div>
+                    <div class="question-text">${escHtml(question)}</div>
+                    <div class="score-row">
+                        ${renderScorePillLight('Activity', scores.activity)}
+                        ${renderScorePillLight('Coverage', scores.coverage)}
+                        ${renderScorePillLight('Specificity', scores.specificity)}
+                        ${renderScorePillLight('Novelty', scores.novelty)}
+                    </div>
+                    <div class="conf-bar-wrap">
+                        <div class="conf-label">
+                            <span>Confidence</span>
+                            <span style="font-weight: 600; color: #1a1a1a;">${conf}%</span>
+                        </div>
+                        <div class="conf-bar-track">
+                            <div class="conf-bar-fill" data-target="${conf}" style="width:0%"></div>
+                        </div>
+                    </div>
+                    ${val?.evidence_assessment ? `
+                    <div class="detail-section">
+                        <div class="detail-label">Evidence Assessment</div>
+                        <div class="detail-text">${escHtml(val.evidence_assessment)}</div>
+                    </div>` : ''}
+                    ${val?.key_finding ? `
+                    <div class="detail-section">
+                        <div class="detail-label">Key Finding</div>
+                        <div class="detail-text">${escHtml(val.key_finding)}</div>
+                    </div>` : ''}
+                    ${q.improvement?.improvement_notes && q.improvement.improvement_notes !== 'Original question retained' && q.improvement.improvement_notes !== 'Original question retained (improvement failed)' ? `
+                    <div class="detail-section">
+                        <div class="detail-label">How it was refined</div>
+                        <div class="detail-text">${escHtml(q.improvement.improvement_notes)}</div>
+                    </div>` : ''}
+                    ${original !== question ? `
+                    <div class="detail-section">
+                        <div class="detail-label">Original Draft</div>
+                        <div class="detail-text" style="color: #999;">"${escHtml(original)}"</div>
+                    </div>` : ''}
+                    ${evidenceItems.length > 0 ? `
+                    <div class="detail-section">
+                        <div class="detail-label">Evidence Sources</div>
+                        <div class="evidence-list-chat">
+                            ${evidenceItems.map(e => `
+                                <div class="evidence-item-chat">
+                                    <a href="${escHtml(e.url || '#')}" target="_blank"><strong>${escHtml(e.label)}</strong></a>
+                                    ${e.sub ? `<div style="margin-top:2px; color: #888;">${escHtml(e.sub)}</div>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>` : ''}
+                </div>
+            `;
+        }
+
+        function renderScorePillLight(label, value) {
+            const level = value >= 70 ? '' : value >= 45 ? 'med' : 'low';
+            return `
+                <div class="score-item">
+                    <span>${label}</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill ${level}" data-target="${value}" style="width:0%"></div>
+                    </div>
+                    <span style="font-weight: 500; min-width: 24px;">${value}</span>
+                </div>
+            `;
+        }
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // BACKEND COMMUNICATION
+        // ═══════════════════════════════════════════════════════════════════════════
+        async function startChatEngine() {
+            // REQUIRE AUTH
+            if (!authToken) {
+                openModal('signin');
+                return;
+            }
+
+            const rawText = textarea.value.trim();
+            const hint = document.getElementById('input-hint');
+
+            if (rawText.length < MIN_INPUT_LENGTH) {
+                hint.textContent = "Please share a bit more detail — at least 50 characters — so I can properly understand your research direction.";
+                hint.classList.add('visible');
+                return;
+            }
+            hint.classList.remove('visible');
+
+            sendBtn.disabled = true;
+            textarea.disabled = true;
+            document.getElementById('input-container').classList.add('disabled');
+            document.getElementById('input-container').classList.add('pipeline-hidden');
+
+            enterChatMode();
+            addUserMessage(rawText);
+            textarea.value = '';
+            sendBtn.classList.remove('active');
+
+            engineRunning = true;
+            updateProgressUI('s1', 'active');
+
+            const authHeaders = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            };
+
+            try {
+                showConnectionStatus('Starting research session...');
+                const startRes = await fetch(`${API_BASE}/api/research/start`, {
+                    method: 'POST',
+                    headers: authHeaders,
+                    body: JSON.stringify({ text: rawText }),
+                });
+
+                if (!startRes.ok) {
+                    const err = await startRes.json();
+                    throw new Error(err.error || 'Failed to start session');
+                }
+
+                const { sessionId } = await startRes.json();
+                currentSessionId = sessionId;
+                console.log('Session started:', sessionId);
+
+                showConnectionStatus('Connecting to pipeline...');
+                // SSE requires token in query param because EventSource doesn't support headers
+                const evtSource = new EventSource(`${API_BASE}/api/research/stream?sessionId=${sessionId}&token=${encodeURIComponent(authToken)}`);
+                currentEventSource = evtSource;
+
+                await addAssistantMessage("Let me read your idea in depth and determine the most feasible research direction for you.", { typing: true });
+
+                createWorkingBlock();
+
+                evtSource.addEventListener('connected', (e) => {
+                    console.log('SSE connected:', JSON.parse(e.data));
+                    showConnectionStatus('Pipeline connected');
+                });
+
+                evtSource.addEventListener('progress', (e) => {
+                    const data = JSON.parse(e.data);
+                    console.log('Progress:', data);
+                    updateProgressUI(data.stageId, data.state);
+                    updateWorkingBlock(data.stageId, data.state);
+                });
+
+                evtSource.addEventListener('message', (e) => {
+                    const data = JSON.parse(e.data);
+                    console.log('Message:', data);
+                    addAssistantMessage(data.text, data.options || {});
+                });
+
+                evtSource.addEventListener('result', (e) => {
+                    const data = JSON.parse(e.data);
+                    console.log('Result received');
+                    finalizeWorkingBlock();
+                    renderResultsInChat(data);
+                });
+
+                evtSource.addEventListener('error', (e) => {
+                    const data = JSON.parse(e.data);
+                    console.error('Pipeline error:', data);
+                    finalizeWorkingBlock();
+                    addAssistantMessage(data.message, { typing: true });
+                    showConnectionStatus(data.message, true);
+                });
+
+                evtSource.addEventListener('done', (e) => {
+                    console.log('Pipeline done');
+                    engineRunning = false;
+                    currentSessionId = null;
+                    currentEventSource = null;
+                    finalizeWorkingBlock();
+                    updateProgressUI('s9', 'done');
+                    document.getElementById('input-container').classList.remove('disabled');
+                    document.getElementById('input-container').classList.remove('pipeline-hidden');
+                    textarea.disabled = false;
+                    sendBtn.disabled = false;
+                    evtSource.close();
+                });
+
+                evtSource.onerror = (err) => {
+                    console.error('SSE connection error:', err);
+                    showConnectionStatus('Connection lost. Please try again.', true);
+                    engineRunning = false;
+                    currentEventSource = null;
+                    document.getElementById('input-container').classList.remove('disabled');
+                    textarea.disabled = false;
+                    sendBtn.disabled = false;
+                    evtSource.close();
+                };
+
+            } catch (err) {
+                console.error('Failed to start pipeline:', err);
+                showConnectionStatus(err.message, true);
+                finalizeWorkingBlock();
+                await addAssistantMessage(`I couldn't start the research session: ${err.message}. Please try again.`, { typing: true });
+                engineRunning = false;
+                document.getElementById('input-container').classList.remove('disabled');
+                document.getElementById('input-container').classList.remove('pipeline-hidden');
+                textarea.disabled = false;
+                sendBtn.disabled = false;
+            }
+        }
+
+        async function stopPipeline() {
+            if (!currentSessionId) return;
+
+            try {
+                await fetch(`${API_BASE}/api/research/stop`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ sessionId: currentSessionId }),
+                });
+            } catch (err) {
+                console.error('Failed to stop pipeline:', err);
+            }
+
+            if (currentEventSource) {
+                currentEventSource.close();
+                currentEventSource = null;
+            }
+
+            engineRunning = false;
+            currentSessionId = null;
+            finalizeWorkingBlock();
+            updateProgressUI('s9', 'done');
+            document.getElementById('input-container').classList.remove('disabled');
+            document.getElementById('input-container').classList.remove('pipeline-hidden');
+            textarea.disabled = false;
+            sendBtn.disabled = false;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // RESET
+        // ═══════════════════════════════════════════════════════════════════════════
+        function resetChat() {
+            chatMode = false;
+            engineRunning = false;
+            workingBlock = null;
+            workingLogInner = null;
+
+            if (currentEventSource) {
+                currentEventSource.close();
+                currentEventSource = null;
+            }
+            currentSessionId = null;
+
+            document.body.classList.remove('chat-mode');
+            document.getElementById('hero-title').style.display = '';
+            document.getElementById('messages-container').innerHTML = '';
+            document.getElementById('messages-container').style.display = 'none';
+            document.getElementById('typing-area').value = '';
+            sendBtn.classList.remove('active');
+            sendBtn.disabled = true;
+            document.getElementById('input-container').classList.remove('disabled');
+            document.getElementById('input-container').classList.remove('pipeline-hidden');
+            document.getElementById('input-hint').classList.remove('visible');
+            updateProgressUI('s9', 'done');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            isPaused = false;
+            charIndex = 0;
+            isDeleting = false;
+            sentenceIndex = (sentenceIndex + 1) % sentences.length;
+            typeEffect();
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // EVENT HANDLERS
+        // ═══════════════════════════════════════════════════════════════════════════
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!sendBtn.disabled && textarea.value.trim().length > 0) {
+                    startChatEngine();
+                }
+            }
+        });
+
+        sendBtn.addEventListener('click', () => {
+            if (!sendBtn.disabled && textarea.value.trim().length > 0) {
+                startChatEngine();
+            }
+        });
+
+        document.getElementById('progress-stop').addEventListener('click', stopPipeline);
+
+        // Initialize auth UI
+        setAuthUI();
+    </script>
+</body>
+</html>
